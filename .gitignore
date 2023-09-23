@@ -1,2 +1,5 @@
 # ignore experiment folder
 Experiment/*
+
+# VSCode
+.vscode/
