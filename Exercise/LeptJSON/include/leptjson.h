@@ -41,9 +41,10 @@ typedef enum {
 
 // 状态码
 typedef enum {
-  LEPT_PARSE_OK = 0,        // OK
-  LEPT_PARSE_END,           // END
-  LEPT_PARSE_INVALID_VALUE, // 解析异常
+  LEPT_PARSE_OK = 0,            // OK
+  LEPT_PARSE_END,               // END
+  LEPT_PARSE_INVALID_VALUE,     // 解析异常
+  LEPT_PARSE_ROOT_NOT_SINGULAR, // 异常分隔节点(解析后仍有非空字符)
 } lept_status_code;
 
 /* 2. 数据结构 */

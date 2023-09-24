@@ -14,13 +14,19 @@
 #include <stdio.h>
 
 lept_status_code lept_parse(lept_node *v, const char *json) {
-  lept_context c;
   assert(v != NULL);
+  lept_context c;
   c.json = json;
   v->type = LEPT_NULL;
-  lept_parse_whitespace(&c);
+  lept_parse_whitespace(&c); // 跳过开头的空白字符
 
-  return lept_parse_value(&c, v);
+  lept_status_code ret;
+  if ((ret = lept_parse_value(&c, v)) == LEPT_PARSE_OK) {
+    lept_parse_whitespace(&c);
+    if (*c.json != '\0')
+      ret = LEPT_PARSE_ROOT_NOT_SINGULAR;
+  }
+  return ret;
 }
 
 lept_type lept_get_type(lept_node *v) {

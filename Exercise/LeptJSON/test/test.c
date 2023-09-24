@@ -63,11 +63,17 @@ static void test_parse_bool() {
   EXPECT_EQ_INT(false, lept_get_boolean(&v));
 }
 
+static void test_parse_not_singular() {
+  lept_node v;
+  EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "true null"));
+}
+
 static void test_parse() {
   test_parse_null();
   test_parse_bool();
   test_parse_end();
   test_parse_invalid_value();
+  test_parse_not_singular();
 }
 
 int main(int argc, char **argv) {
