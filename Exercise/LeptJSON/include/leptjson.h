@@ -27,6 +27,18 @@
     c->json++;                                                                 \
   } while (0)
 
+/**
+ * @brief 判断是否为数字
+ *
+ */
+#define ISDIGIT(ch) ((ch) >= '0' && (ch) <= '9')
+
+/**
+ * @brief 判断是否为非零数字
+ *
+ */
+#define ISDIGIT1TO9(ch) ((ch) >= '1' && (ch) <= '9')
+
 /* 1. 码值表 */
 
 // 节点类型
@@ -45,13 +57,15 @@ typedef enum {
   LEPT_PARSE_END,               // END
   LEPT_PARSE_INVALID_VALUE,     // 解析异常
   LEPT_PARSE_ROOT_NOT_SINGULAR, // 异常分隔节点(解析后仍有非空字符)
+  LEPT_PARSE_NUMBER_TOO_BIG,    // 数字溢出
 } lept_status_code;
 
 /* 2. 数据结构 */
 // 节点
 typedef struct {
-  bool boolean;
   lept_type type;
+  bool boolean;  // 存储布尔值 LEPT_BOOL
+  double number; // 存储数字 LEPT_NUMBER
 } lept_node;
 
 // 上下文
@@ -78,15 +92,6 @@ lept_status_code lept_parse(lept_node *v, const char *json);
  */
 lept_type lept_get_type(lept_node *v);
 
-/**
- * @brief 获取节点布尔值
- *
- * @param v
- * @return true
- * @return false
- */
-bool lept_get_boolean(lept_node *v);
-
 /* 3. 内部方法 */
 
 /**
@@ -110,7 +115,16 @@ lept_status_code lept_parse_null(lept_context *c, lept_node *v);
  * @param c
  * @param v
  */
-lept_status_code lept_parse_bool(lept_context *c, lept_node *v);
+lept_status_code lept_parse_boolean(lept_context *c, lept_node *v);
+
+/**
+ * @brief 解析数字
+ *
+ * @param c
+ * @param v
+ * @return lept_status_code
+ */
+lept_status_code lept_parse_number(lept_context *c, lept_node *v);
 
 /**
  * @brief 解析函数统一入口
@@ -120,5 +134,32 @@ lept_status_code lept_parse_bool(lept_context *c, lept_node *v);
  * @return lept_status_code
  */
 lept_status_code lept_parse_value(lept_context *c, lept_node *v);
+
+/**
+ * @brief 获取节点布尔值
+ *
+ * @param v
+ * @return true
+ * @return false
+ */
+bool lept_get_boolean(lept_node *v);
+
+/**
+ * @brief 获取节点数字
+ *
+ * @param v
+ * @return double
+ */
+double lept_get_number(lept_node *v);
+
+/**
+ * @brief 逐字符比较
+ *
+ * @param json
+ * @param literal
+ * @return true
+ * @return false
+ */
+static bool lept_literal_compare(const char *str, const char *literal);
 
 #endif /* LEPTJSON_H */
