@@ -27,3 +27,9 @@ lept_type lept_get_type(lept_node *v) {
   assert(v != NULL);
   return v->type;
 }
+
+bool lept_get_boolean(lept_node *v) {
+  assert(v != NULL);
+  assert(v->type == LEPT_BOOL);
+  return v->boolean;
+}

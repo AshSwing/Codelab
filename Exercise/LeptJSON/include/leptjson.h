@@ -13,6 +13,7 @@
 #define LEPTJSON_H
 
 #include <assert.h>
+#include <stdbool.h>
 
 /* 0. 宏定义 */
 
@@ -31,12 +32,11 @@
 // 节点类型
 typedef enum {
   LEPT_NULL,
-  LEPT_FALSE,
-  LEPT_TRUE,
+  LEPT_BOOL,
   LEPT_NUMBER,
   LEPT_STRING,
   LEPT_ARRAY,
-  LEPT_OBJECT
+  LEPT_OBJECT,
 } lept_type;
 
 // 状态码
@@ -47,9 +47,9 @@ typedef enum {
 } lept_status_code;
 
 /* 2. 数据结构 */
-
 // 节点
 typedef struct {
+  bool boolean;
   lept_type type;
 } lept_node;
 
@@ -77,6 +77,15 @@ lept_status_code lept_parse(lept_node *v, const char *json);
  */
 lept_type lept_get_type(lept_node *v);
 
+/**
+ * @brief 获取节点布尔值
+ *
+ * @param v
+ * @return true
+ * @return false
+ */
+bool lept_get_boolean(lept_node *v);
+
 /* 3. 内部方法 */
 
 /**
@@ -85,6 +94,22 @@ lept_type lept_get_type(lept_node *v);
  * @param c
  */
 void lept_parse_whitespace(lept_context *c);
+
+/**
+ * @brief 解析空值
+ *
+ * @param c
+ * @param v
+ */
+lept_status_code lept_parse_null(lept_context *c, lept_node *v);
+
+/**
+ * @brief 解析布尔值
+ *
+ * @param c
+ * @param v
+ */
+lept_status_code lept_parse_bool(lept_context *c, lept_node *v);
 
 /**
  * @brief 解析函数统一入口
