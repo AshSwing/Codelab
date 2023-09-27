@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 void lept_parse_whitespace(lept_context *c) {
   const char *p = c->json;
@@ -118,4 +119,30 @@ static bool lept_literal_compare(const char *str, const char *literal) {
     }
   }
   return true;
+}
+
+static void lept_free(lept_node *v) {
+  assert(v != NULL);
+  if (v->type == LEPT_STRING) {
+    free(v->string.str);
+  }
+  v->type = LEPT_NULL;
+}
+
+static void lept_set_string(lept_node *v, const char *s, size_t len) {
+  assert(v != NULL);
+  assert((s != NULL) || len == 0);
+  lept_free(v);
+  v->string.str = (char *)malloc(len + 1);
+  memcpy(v->string.str, s, len);
+  v->string.str[len] = '\0';
+  v->string.len = len;
+  v->type = LEPT_STRING;
+}
+
+void lept_set_boolean(lept_node *v, bool b) {
+  assert(v != NULL);
+  lept_free(v);
+  v->type = LEPT_BOOL;
+  v->boolean = b;
 }

@@ -14,6 +14,7 @@
 
 #include <assert.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 /* 0. 宏定义 */
 
@@ -38,6 +39,15 @@
  *
  */
 #define ISDIGIT1TO9(ch) ((ch) >= '1' && (ch) <= '9')
+
+/**
+ * @brief 节点初始化
+ *
+ */
+#define lept_init(v)                                                           \
+  do {                                                                         \
+    (v)->type = LEPT_NULL;                                                     \
+  } while (0);
 
 /* 1. 码值表 */
 
@@ -64,8 +74,14 @@ typedef enum {
 // 节点
 typedef struct {
   lept_type type;
-  bool boolean;  // 存储布尔值 LEPT_BOOL
-  double number; // 存储数字 LEPT_NUMBER
+  union { // 匿名Union可以直接访问
+    struct {
+      char *str;
+      size_t len;
+    } string;      // 字符串
+    double number; // 数字
+    bool boolean;  // 布尔值
+  };
 } lept_node;
 
 // 上下文
@@ -144,6 +160,8 @@ lept_status_code lept_parse_value(lept_context *c, lept_node *v);
  */
 bool lept_get_boolean(lept_node *v);
 
+void lept_set_boolean(lept_node *v, bool b);
+
 /**
  * @brief 获取节点数字
  *
@@ -151,6 +169,8 @@ bool lept_get_boolean(lept_node *v);
  * @return double
  */
 double lept_get_number(lept_node *v);
+
+void lept_set_number(lept_node *v, double n);
 
 /**
  * @brief 逐字符比较
@@ -161,5 +181,24 @@ double lept_get_number(lept_node *v);
  * @return false
  */
 static bool lept_literal_compare(const char *str, const char *literal);
+
+/**
+ * @brief 内存释放
+ *
+ * @param v
+ */
+static void lept_free(lept_node *v);
+
+/**
+ * @brief 保存字符串
+ *
+ * @param v
+ * @param s
+ * @param len
+ */
+static void lept_set_string(lept_node *v, const char *s, size_t len);
+
+const char *lept_get_string(lept_node *v);
+size_t lept_get_string_length(lept_node *v);
 
 #endif /* LEPTJSON_H */
